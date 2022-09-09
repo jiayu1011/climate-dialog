@@ -1,4 +1,12 @@
 {
   "verbose": true,
-  "watch": ["./koa"]
+  "watch": ["koa/"],
+  "script": "./koa/server.ts",
+  "options": {
+    "extensions": ["ts", "tsx"],
+    "exec": "ts-node"
+  },
+  "ignore": [
+    "koa/data/"
+  ]
 }
