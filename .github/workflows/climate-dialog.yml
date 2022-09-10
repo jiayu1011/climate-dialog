@@ -29,4 +29,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
         with:
           target_branch: gh-pages
-          build_dir: docs/.vuepress/dist
+          build_dir: dist
