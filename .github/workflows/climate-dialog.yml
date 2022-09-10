@@ -1,0 +1,32 @@
+on:
+  push:
+    branches:
+      - "master"
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '16.x'                # set this to the node version to use
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install & Build
+        run: yarn && yarn docs:build
+
+      - name: Deploy to Github Pages
+        uses: crazy-max/ghaction-github-pages@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
+        with:
+          target_branch: gh-pages
+          build_dir: docs/.vuepress/dist
