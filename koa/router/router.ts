@@ -23,13 +23,13 @@ router.all('/websocket/dialog/list', async (ctx: any) => {
 })
 
 
-// router.get('/dialog/list', (ctx: any, next: any) => {
-//     const dialogList: any = JSON.parse(fs.readFileSync('./koa/data/dialog_list.json', {encoding: "utf-8"}))
-//     console.log(dialogList)
-//     ctx.body = {
-//         dialogList: dialogList
-//     }
-// })
+router.get('/dialog/list', (ctx: any, next: any) => {
+    const dialogList: any = JSON.parse(fs.readFileSync('./koa/data/dialog_list.json', {encoding: "utf-8"}))
+    console.log(dialogList)
+    ctx.body = {
+        dialogList: dialogList
+    }
+})
 
 router.post('/dialog/query', (ctx: any, next: any) => {
     console.log(ctx.request.body)

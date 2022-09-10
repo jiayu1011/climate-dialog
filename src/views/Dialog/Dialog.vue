@@ -2,7 +2,7 @@
   <div class="dialog">
     <div class="dialog_container">
       <div class="dialog_header">气象智能机器人</div>
-      <div class="dialog_body" id="dialog_body">
+      <div class="dialog_body" ref="dialogListRef">
         <div class="dialog_list">
           <dialog-item :class="item.isRobot? 'left_item':'right_item'" v-for="(item, index) in dialogList" :key="index">
             <template #avatar class="item_avatar">
@@ -48,9 +48,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, watch, nextTick} from "vue";
+import {defineComponent, ref, watch, nextTick, Ref} from "vue";
 import DialogItem from "@/views/Dialog/DialogItem.vue";
 import axios from "@/utils/axios";
+import {AxiosError, AxiosResponse } from "axios";
 
 interface DiaLogItem {
   isRobot: boolean,
@@ -68,20 +69,28 @@ export default defineComponent({
     const count = ref<number>(1)
     const dialogList = ref<Array<DiaLogItem>>([])
     const queryMsg = ref<string>('')
+    const dialogListRef = ref<Element | null>(null)
 
     watch(dialogList, () => {
-      scrollToBottom(document.getElementById('dialog_body'))
+      // scrollToBottom()
     })
 
-    const scrollToBottom = (element: HTMLElement | null) => {
-      if(!element) return
-      // DOM操作放到nextTick中
-      nextTick(() => {
-        element.scrollTop = element.scrollHeight
-      })
+    const scrollToBottom = () => {
+      // 使用ref操作dom
+      if(!dialogListRef.value) return
+      dialogListRef.value.scrollTop = dialogListRef.value.scrollHeight
     }
 
     const getDialogList = () => {
+       return axios.get('/dialog/list')
+           .then((res: AxiosResponse) => {
+             console.log('聊天记录:', dialogList.value = res.data.dialogList)
+           })
+           .catch((err: AxiosError) => {
+             console.log(err)
+           })
+    }
+    const wsGetDialogList = () => {
       const webSocket: WebSocket = new WebSocket('ws://localhost:3000/websocket/dialog/list')
       webSocket.onopen = () => {
         console.log('websocket连接成功')
@@ -95,21 +104,26 @@ export default defineComponent({
         console.log('websocket连接关闭')
       }
     }
-    const handleMsgSend = () => {
-      axios.post('/dialog/query', {
+
+    const sendMsg = () => {
+      return axios.post('/dialog/query', {
         queryMsg: queryMsg.value
-      }).then((res: any) => {
-        console.log('发送查询:', res)
-        if (res.data.isOk) {
-          getDialogList()
-          queryMsg.value = ''
-        }
-      }).catch((err: any) => {
-        console.log(err)
       })
     }
-    const init = () => {
-      getDialogList()
+
+    const handleMsgSendClick = async () => {
+      const res: AxiosResponse = await sendMsg()
+      console.log('发送查询:', res)
+      if (res.data.isOk) {
+        queryMsg.value = ''
+        await getDialogList()
+        scrollToBottom()
+      }
+    }
+    const init = async () => {
+      await getDialogList()
+      scrollToBottom()
+      wsGetDialogList()
     }
     const reset = () => {
 
@@ -121,7 +135,8 @@ export default defineComponent({
       count,
       queryMsg,
       dialogList,
-      handleMsgSend,
+      dialogListRef,
+      handleMsgSend: handleMsgSendClick,
     }
   }
 })
