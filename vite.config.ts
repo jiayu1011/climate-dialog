@@ -14,7 +14,7 @@ export default defineConfig({
     },
 
   },
-  base: './',
+  base: '/climate-dialog',
   server: {
     open: true,
     proxy: {
