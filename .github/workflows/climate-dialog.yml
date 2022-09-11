@@ -23,7 +23,7 @@ jobs:
       - name: Install & Build
         run: yarn && yarn build
 
-      - run: ls -r dist
+      - run: ls -r dist/assets
 #
 #      - name: Deploy to Github Pages
 #        uses: crazy-max/ghaction-github-pages@v3
