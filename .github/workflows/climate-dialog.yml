@@ -23,12 +23,10 @@ jobs:
       - name: Install & Build
         run: yarn && yarn build
 
-      - run: ls -r dist/assets
-#
-#      - name: Deploy to Github Pages
-#        uses: crazy-max/ghaction-github-pages@v3
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
-#        with:
-#          target_branch: gh-pages
-#          build_dir: dist
+      - name: Deploy to Github Pages
+        uses: crazy-max/ghaction-github-pages@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
+        with:
+          target_branch: gh-pages
+          build_dir: dist
